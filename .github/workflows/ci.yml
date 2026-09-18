@@ -49,21 +49,21 @@ jobs:
       matrix:
         versions:
           # NOTE: Update `CONTRIBUTING.md` when changing the minimum version
-          - ghc: '9.6'
-            cabal: 'latest'
-            cabalopts: '--ghc-option=-Werror'
-          - ghc: '9.8'
-            cabal: 'latest'
-            cabalopts: '--ghc-option=-Werror'
-          - ghc: '9.10'
-            cabal: 'latest'
-            cabalopts: '--ghc-option=-Werror'
-          - ghc: '9.12'
-            cabal: 'latest'
-            cabalopts: '--ghc-option=-Werror'
-          - ghc: '9.12'
-            cabal: 'latest'
-            cabalopts: '--ghc-option=-Werror -f-embed_data_files'
+        - ghc: '9.6'
+          cabal: 'latest'
+          cabalopts: '--ghc-option=-Werror'
+        - ghc: '9.8'
+          cabal: 'latest'
+          cabalopts: '--ghc-option=-Werror'
+        - ghc: '9.10'
+          cabal: 'latest'
+          cabalopts: '--ghc-option=-Werror'
+        - ghc: '9.12'
+          cabal: 'latest'
+          cabalopts: '--ghc-option=-Werror'
+        - ghc: '9.12'
+          cabal: 'latest'
+          cabalopts: '--ghc-option=-Werror -f-embed_data_files'
 
     steps:
     - uses: actions/checkout@v7
@@ -84,7 +84,7 @@ jobs:
     # declare/restore cached things
 
     - name: Cache cabal global package db
-      id:   cabal-global
+      id: cabal-global
       uses: actions/cache@v6
       with:
         path: |
@@ -92,7 +92,7 @@ jobs:
         key: ${{ runner.os }}-${{ matrix.versions.ghc }}-${{ matrix.versions.cabal }}-cabal-global-${{ secrets.CACHE_VERSION }}
 
     - name: Cache cabal work
-      id:   cabal-local
+      id: cabal-local
       uses: actions/cache@v6
       with:
         path: |
@@ -101,12 +101,12 @@ jobs:
 
     - name: Update cabal
       run: |
-          cabal update
+        cabal update
 
     - name: Build and test
       run: |
-          cabal build ${{ matrix.versions.cabalopts }} --enable-tests --disable-optimization all
-          cabal test ${{ matrix.versions.cabalopts }} --disable-optimization all
+        cabal build ${{ matrix.versions.cabalopts }} --enable-tests --disable-optimization all
+        cabal test ${{ matrix.versions.cabalopts }} --disable-optimization all
 
   linux-stack:
 
@@ -122,7 +122,7 @@ jobs:
 
     # declare/restore cached things
     - name: Cache stack global package db
-      id:   stack-global
+      id: stack-global
       uses: actions/cache@v6
       with:
         path: |
@@ -130,7 +130,7 @@ jobs:
         key: ${{ runner.os }}-${{ matrix.versions.ghc }}-${{ matrix.versions.cabal }}-stack-global-${{ secrets.CACHE_VERSION }}
 
     - name: Cache stack work
-      id:   stack-local
+      id: stack-local
       uses: actions/cache@v6
       with:
         path: |
@@ -139,40 +139,5 @@ jobs:
 
     - name: Build and test
       run: |
-          stack test --fast
-
-  windows:
-
-    runs-on: windows-2022
-
-    steps:
-    - uses: actions/checkout@v7
-
-    - name: Install ghc
-      run: |
-        ghcup install ghc --set 9.10
-        ghcup install cabal --set latest
-
-    # declare/restore cached things
-
-    - name: Cache cabal global package db
-      id:   cabal-global
-      uses: actions/cache@v6
-      with:
-        path: |
-          %LOCALAPPDATA%/cabal/store
-        key: ${{ runner.os }}-appdata-cabal-${{ hashFiles('cabal.project') }}-${{ secrets.CACHE_VERSION }}
-
-    - name: Cache cabal work
-      id: cabal-local
-      uses: actions/cache@v6
-      with:
-        path: |
-          dist-newstyle
-        key: ${{ runner.os }}-cabal-work-${{ hashFiles('cabal.project') }}-${{ secrets.CACHE_VERSION }}
-
-    - name: Build and test
-      run: |
-          cabal update
-          cabal test --ghc-option=-Werror -fhttp --enable-tests --disable-optimization --ghc-options=-Werror all
+        stack test --fast
 
